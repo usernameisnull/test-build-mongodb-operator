@@ -20,7 +20,6 @@ jobs:
         with:
           repository: "mongodb/mongodb-kubernetes-operator"
           ref: 'v0.10.0'
-          path: '/tmp'
 
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -49,12 +48,12 @@ jobs:
 
       - name: Override some files of mongodb operator
         run: |
-          cp mongodb/config.json /tmp/mongodb-kubernetes-operator/scripts/ci/config.json
-          cp mongodb/operator-inventory.yaml /tmp/mongodb-kubernetes-operator/inventories/operator-inventory.yaml
-          cp mongodb/pipeline.py /tmp/mongodb-kubernetes-operator/pipeline.py
+          cp mongodb/config.json mongodb-kubernetes-operator/scripts/ci/config.json
+          cp mongodb/operator-inventory.yaml mongodb-kubernetes-operator/inventories/operator-inventory.yaml
+          cp mongodb/pipeline.py mongodb-kubernetes-operator/pipeline.py
 
       - name: Publish Image To ghcr.io
-        run: cd /tmp && python pipeline.py --image-name ${{ github.event.inputs.pipeline-argument }} --tag ${{ github.event.inputs.image-tag }}
+        run: cd mongodb-kubernetes-operator && python pipeline.py --image-name ${{ github.event.inputs.pipeline-argument }} --tag ${{ github.event.inputs.image-tag }}
         env:
           MONGODB_COMMUNITY_CONFIG: "${{ github.workspace }}/scripts/ci/config.json"
           version_id: "${{ github.event.inputs.image-tag }}"
