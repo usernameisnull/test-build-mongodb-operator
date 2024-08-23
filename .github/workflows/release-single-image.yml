@@ -18,10 +18,9 @@ jobs:
       - name: Checkout mongodb operator
         uses: actions/checkout@v4
         with:
-          repository: "mongodb-kubernetes-operator"
+          repository: "mongodb/mongodb-kubernetes-operator"
           ref: 'v0.10.0'
           path: '/tmp'
-          github-server-url: 'https://github.com/mongodb'
 
       - name: Setup Python
         uses: actions/setup-python@v2
