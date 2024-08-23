@@ -1,0 +1,62 @@
+name: Release Single Image
+on:
+  workflow_dispatch:
+    inputs:
+      pipeline-argument:
+        description: 'Argument to pass to pipeline'
+        required: true
+      image-tag:
+        description: 'Image tag to build'
+        required: true
+jobs:
+  release-single-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Checkout mongodb operator
+        uses: actions/checkout@v4
+        with:
+          repository: "mongodb-kubernetes-operator"
+          ref: 'v0.10.0'
+          path: '/tmp'
+          github-server-url: 'https://github.com/mongodb'
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10.4'
+          architecture: 'x64'
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ hashFiles('requirements.txt') }}
+
+      - name: Install Python Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # template: .action_templates/steps/set-up-qemu.yaml
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Override some files of mongodb operator
+        run: |
+          cp mongodb/config.json /tmp/mongodb-kubernetes-operator/scripts/ci/config.json
+          cp mongodb/operator-inventory.yaml /tmp/mongodb-kubernetes-operator/inventories/operator-inventory.yaml
+          cp mongodb/pipeline.py /tmp/mongodb-kubernetes-operator/pipeline.py
+
+      - name: Publish Image To ghcr.io
+        run: cd /tmp && python pipeline.py --image-name ${{ github.event.inputs.pipeline-argument }} --tag ${{ github.event.inputs.image-tag }}
+        env:
+          MONGODB_COMMUNITY_CONFIG: "${{ github.workspace }}/scripts/ci/config.json"
+          version_id: "${{ github.event.inputs.image-tag }}"
+
