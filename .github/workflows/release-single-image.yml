@@ -72,7 +72,7 @@ jobs:
           cp ./test-build-mongodb-operator/mongodb/operator-inventory.yaml ./mongodb-kubernetes-operator/inventories/operator-inventory.yaml
           cp ./test-build-mongodb-operator/mongodb/pipeline.py ./mongodb-kubernetes-operator/pipeline.py
 
-      - name: Publish Image To ghcr.io
+      - name: Build and Push Image To ghcr.io
         working-directory: ./mongodb-kubernetes-operator
         run: python pipeline.py --image-name ${{ github.event.inputs.pipeline-argument }} --tag ${{ github.event.inputs.image-tag }}
         env:
