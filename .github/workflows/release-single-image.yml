@@ -15,6 +15,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
+          #/usr/bin/git config --global --add safe.directory /home/runner/work/test-build-mongodb-operator/test-build-mongodb-operator/test-build-mongodb-operator
           path: test-build-mongodb-operator
 
       - name: Checkout mongodb operator
@@ -22,6 +23,7 @@ jobs:
         with:
           repository: "mongodb/mongodb-kubernetes-operator"
           ref: 'v0.10.0'
+          #/usr/bin/git config --global --add safe.directory /home/runner/work/test-build-mongodb-operator/test-build-mongodb-operator/mongodb-kubernetes-operator
           path: mongodb-kubernetes-operator
 
       - name: Setup Python
@@ -30,42 +32,57 @@ jobs:
           python-version: '3.10.4'
           architecture: 'x64'
 
-#      - uses: actions/cache@v2
-#        with:
-#          path: ~/.cache/pip
-#          key: ${{ hashFiles('requirements.txt') }}
-
-      - name: Install Python Dependencies
-        run: pip install -r requirements.txt
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # template: .action_templates/steps/set-up-qemu.yaml
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Override some files of mongodb operator
-        working-directory: /home/runner/work/test-build-mongodb-operator
+      - name: Debug directories with working-directory
+        working-directory: /home/runner/work/test-build-mongodb-operator/test-build-mongodb-operator
         run: |
           ls -alh ./
           pwd
-          ls -alh /home/runner/work
-          ls -alh /home/runner/work/test-build-mongodb-operator
-          ls -alh /home/runner/work/mongodb-kubernetes-operator
-          ls ../mongodb-kubernetes-operator
-          cp ./mongodb/config.json ../mongodb-kubernetes-operator/scripts/ci/config.json
-          cp ./mongodb/operator-inventory.yaml ../mongodb-kubernetes-operator/inventories/operator-inventory.yaml
-          cp ./mongodb/pipeline.py ../mongodb-kubernetes-operator/pipeline.py
+          ls -alh ./test-build-mongodb-operator
+          ls -alh ./mongodb-kubernetes-operator
 
-      - name: Publish Image To ghcr.io
-        working-directory: /home/runner/work/mongodb-kubernetes-operator
-        run: python pipeline.py --image-name ${{ github.event.inputs.pipeline-argument }} --tag ${{ github.event.inputs.image-tag }}
-        env:
-          MONGODB_COMMUNITY_CONFIG: "${{ github.workspace }}/scripts/ci/config.json"
-          version_id: "${{ github.event.inputs.image-tag }}"
+      - name: Debug directories
+        run: |
+          ls -alh ./
+          pwd
+          ls -alh ./test-build-mongodb-operator
+          ls -alh ./mongodb-kubernetes-operator
+
+#      - uses: actions/cache@v2
+#        with:
+#          path: ~/.cache/pip
+#          key: ${{ hashFiles('/home/runner/work/test-build-mongodb-operator/requirements.txt') }}
+#
+#      - name: Install Python Dependencies
+#        run: pip install -r ../mongodb-kubernetes-operator/requirements.txt
+#
+#      - name: Login to GitHub Container Registry
+#        uses: docker/login-action@v2
+#        with:
+#          registry: ghcr.io
+#          username: ${{ github.actor }}
+#          password: ${{ secrets.GITHUB_TOKEN }}
+#
+#      # template: .action_templates/steps/set-up-qemu.yaml
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v2
+#
+#      - name: Override some files of mongodb operator
+#        working-directory: /home/runner/work/test-build-mongodb-operator
+#        run: |
+#          ls -alh ./
+#          pwd
+#          ls -alh /home/runner/work
+#          ls -alh /home/runner/work/test-build-mongodb-operator
+#          ls -alh /home/runner/work/mongodb-kubernetes-operator
+#          ls ../mongodb-kubernetes-operator
+#          cp ./mongodb/config.json ../mongodb-kubernetes-operator/scripts/ci/config.json
+#          cp ./mongodb/operator-inventory.yaml ../mongodb-kubernetes-operator/inventories/operator-inventory.yaml
+#          cp ./mongodb/pipeline.py ../mongodb-kubernetes-operator/pipeline.py
+#
+#      - name: Publish Image To ghcr.io
+#        working-directory: /home/runner/work/mongodb-kubernetes-operator
+#        run: python pipeline.py --image-name ${{ github.event.inputs.pipeline-argument }} --tag ${{ github.event.inputs.image-tag }}
+#        env:
+#          MONGODB_COMMUNITY_CONFIG: "${{ github.workspace }}/scripts/ci/config.json"
+#          version_id: "${{ github.event.inputs.image-tag }}"
 
