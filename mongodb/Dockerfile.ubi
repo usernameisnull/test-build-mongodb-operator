@@ -1,6 +1,6 @@
 {% extends "Dockerfile.template" %}
 
-{% set base_image = "registry.access.redhat.com/ubi8/ubi-minimal:8.6-994xxx" %}
+{% set base_image = "registry.access.redhat.com/ubi8/ubi-minimal:8.6-994" %}
 
 {% block packages -%}
 RUN microdnf install -y --disableplugin=subscription-manager --setopt=install_weak_deps=0 nss_wrapper
