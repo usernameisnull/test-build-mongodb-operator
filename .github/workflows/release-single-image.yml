@@ -74,6 +74,7 @@ jobs:
           cp ./test-build-mongodb-operator/mongodb/config.json ./mongodb-kubernetes-operator/scripts/ci/config.json
           cp ./test-build-mongodb-operator/mongodb/operator-inventory.yaml ./mongodb-kubernetes-operator/inventories/operator-inventory.yaml
           cp ./test-build-mongodb-operator/mongodb/pipeline.py ./mongodb-kubernetes-operator/pipeline.py
+          cp ./ksmartdata/images/mongodb/Dockerfile.ubi ./mongodb-kubernetes-operator/scripts/dev/templates/agent/Dockerfile.ubi
 
       - name: Build and Push Image To ghcr.io
         working-directory: ./mongodb-kubernetes-operator
