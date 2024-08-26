@@ -89,7 +89,7 @@ def build_and_push_image(
     sign: bool,
 ) -> None:
     
-    logger.info(f"args = {args}, image_name = {image_name}, config = {config}")
+    logger.info(f"args = {args}, image_name = {image_name}, config = {config._distro}")
     
     if sign:
         mongodb_artifactory_login()
