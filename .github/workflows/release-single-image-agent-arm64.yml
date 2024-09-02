@@ -1,4 +1,4 @@
-name: Release Single Image
+name: Release Single Image ARM64
 on:
   workflow_dispatch:
     inputs:
@@ -75,12 +75,12 @@ jobs:
           cp ./test-build-mongodb-operator/mongodb/operator-inventory.yaml ./mongodb-kubernetes-operator/inventories/operator-inventory.yaml
           cp ./test-build-mongodb-operator/mongodb/pipeline.py ./mongodb-kubernetes-operator/pipeline.py
           cp ./test-build-mongodb-operator/mongodb/Dockerfile.ubi ./mongodb-kubernetes-operator/scripts/dev/templates/agent/Dockerfile.ubi
-          cp ./test-build-mongodb-operator/mongodb/inventory.yaml ./mongodb-kubernetes-operator/inventory.yaml
+          cp ./test-build-mongodb-operator/mongodb/Dockerfile.template ./mongodb-kubernetes-operator/scripts/dev/templates/agent/Dockerfile.template
 
       - name: Build and Push Image To ghcr.io
         working-directory: ./mongodb-kubernetes-operator
         run: | 
-          python pipeline.py --image-name ${{ github.event.inputs.pipeline-argument }} --tag ${{ github.event.inputs.image-tag }}
+          python pipeline.py --image-name ${{ github.event.inputs.pipeline-argument }} --tag ${{ github.event.inputs.image-tag }} --arch arm64
           cat scripts/dev/templates/agent/Dockerfile.ubi-107.0.1.8507-1
         env:
           MONGODB_COMMUNITY_CONFIG: "${{ github.workspace }}/mongodb-kubernetes-operator/scripts/ci/config.json"

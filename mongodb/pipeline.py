@@ -99,6 +99,8 @@ def build_and_push_image(
         if image_name == "agent":
             args[AGENT_DISTRO_KEY] = AGENT_DISTROS_PER_ARCH[arch][AGENT_DISTRO_KEY]
             args[TOOLS_DISTRO_KEY] = AGENT_DISTROS_PER_ARCH[arch][TOOLS_DISTRO_KEY]
+            logger.info(f"image_name == 'agent', args[TOOLS_DISTRO_KEY] = {args[TOOLS_DISTRO_KEY]}, "
+                        f"args[TOOLS_DISTRO_KEY] = {args[TOOLS_DISTRO_KEY]}")
         process_image(
             image_tag,
             build_args=args,
